@@ -149,9 +149,31 @@ Sigue el menú interactivo para registrar un usuario, iniciar sesión, ver la bi
 
 ---
 
-## 📸 6. Capturas de Pantalla
+## 📸 6. Capturas de Pantalla de Pruebas Exitosas
 
-*(Espacio para adjuntar las capturas de pruebas exitosas del servidor, cliente y base de datos)*
+### 1. Inicialización del Servidor y Cliente
+Puesta en marcha del servidor API Flask escuchando en `http://localhost:5000` con la base de datos SQLite inicializada, junto al menú interactivo de `cliente.py`.
+![01 - Servidor y Cliente Iniciados](Capturas/01.jpg)
+
+### 2. Formulario de Registro de Usuario
+Selección de la Opción 1 en el cliente de consola e ingreso de los datos requeridos (`usuario: Berger`, `contraseña: 1234`).
+![02 - Formulario de Registro](Capturas/02.jpg)
+
+### 3. Registro Exitoso (`POST /registro` 201 Created)
+Confirmación del alta del usuario en el cliente y verificación en el log del servidor indicando que la contraseña fue almacenada con hash seguro en SQLite.
+![03 - Registro Exitoso con Hash](Capturas/03.jpg)
+
+### 4. Inicio de Sesión (`POST /login` 200 OK)
+Verificación de credenciales contra el hash en base de datos SQLite y habilitación de la sesión para el acceso a las tareas.
+![04 - Login Exitoso](Capturas/04.jpg)
+
+### 5. Consulta de Bienvenida (`GET /tareas` 200 OK)
+Petición al endpoint `GET /tareas` desde el cliente, obteniendo la respuesta HTTP 200 con el contenido HTML de bienvenida.
+![05 - Endpoint GET /tareas](Capturas/05.jpg)
+
+### 6. Gestión Completa de Tareas y Cliente Web Interactivo
+Flujo integral de creación (`POST /api/tareas`), consulta (`GET /api/tareas`) y actualización a completada (`PUT /api/tareas/1`), visualizando las respuestas en la consola del cliente, los logs del servidor y el cliente web interactivo.
+![06 - Gestión Completa de Tareas](Capturas/06.jpg)
 
 ---
 

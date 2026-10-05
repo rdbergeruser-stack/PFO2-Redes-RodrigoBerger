@@ -228,6 +228,31 @@
         .theory-box ul { margin-left: 20px; color: var(--text-muted); font-size: 0.9rem; }
         .theory-box li { margin-bottom: 6px; }
 
+        /* Galería de Capturas */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .gallery-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .gallery-item:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-bottom: 1px solid var(--border);
+        }
+        .gallery-caption { padding: 14px; }
+        .gallery-caption h4 { font-size: 0.95rem; color: #fff; margin-bottom: 4px; }
+        .gallery-caption p { font-size: 0.85rem; color: var(--text-muted); }
+
         footer { margin-top: 50px; border-top: 1px solid var(--border); padding-top: 25px; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
     </style>
 </head>
@@ -240,6 +265,7 @@
             </a>
             <nav>
                 <a href="#cliente-web">Cliente Web</a>
+                <a href="#capturas">Capturas</a>
                 <a href="#teoria">Teoría</a>
                 <a href="#ejecucion">Instrucciones</a>
             </nav>
@@ -347,6 +373,55 @@
             <div class="panel">
                 <h3>📡 Registro de Peticiones HTTP en Vivo</h3>
                 <div id="http-log" class="log-box">[SISTEMA] Cliente web listo. Asegúrate de tener corriendo 'python servidor.py'.</div>
+            </div>
+        </section>
+
+        <!-- Capturas de Pantalla -->
+        <section id="capturas">
+            <div class="section-header"><h2>📸 Capturas de Pantalla de Pruebas Exitosas</h2></div>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="Capturas/01.jpg" alt="Servidor y Cliente Iniciados">
+                    <div class="gallery-caption">
+                        <h4>1. Inicialización de Servidor y Cliente</h4>
+                        <p>Puesta en marcha del servidor API Flask en localhost:5000 y apertura del menú en el cliente de consola.</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="Capturas/02.jpg" alt="Formulario de Registro">
+                    <div class="gallery-caption">
+                        <h4>2. Formulario de Registro</h4>
+                        <p>Ingreso de credenciales de usuario (Berger / 1234) en la opción 1 del cliente.</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="Capturas/03.jpg" alt="Registro Exitoso">
+                    <div class="gallery-caption">
+                        <h4>3. Registro Exitoso (POST /registro 201)</h4>
+                        <p>Confirmación en cliente y registro con hash seguro en SQLite en los logs del servidor.</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="Capturas/04.jpg" alt="Login Exitoso">
+                    <div class="gallery-caption">
+                        <h4>4. Inicio de Sesión Exitoso (POST /login 200)</h4>
+                        <p>Verificación de hash en base de datos y confirmación de sesión activa.</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="Capturas/05.jpg" alt="GET /tareas">
+                    <div class="gallery-caption">
+                        <h4>5. Consulta de Bienvenida (GET /tareas 200)</h4>
+                        <p>Respuesta HTTP 200 con la interfaz web de bienvenida servida por Flask.</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="Capturas/06.jpg" alt="Gestión de Tareas">
+                    <div class="gallery-caption">
+                        <h4>6. Gestión Completa de Tareas y Cliente Web</h4>
+                        <p>Creación, consulta y actualización de tareas en consola, logs del servidor y panel web interactivo.</p>
+                    </div>
+                </div>
             </div>
         </section>
 

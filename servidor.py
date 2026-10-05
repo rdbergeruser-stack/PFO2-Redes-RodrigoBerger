@@ -23,6 +23,7 @@ def habilitar_cors(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Usuario, X-Contrasena, X-Password"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Private-Network"] = "true"
     return response
 
 # ==============================================================================
