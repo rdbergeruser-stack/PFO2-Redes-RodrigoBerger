@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PFO 2 - Sistema de Gestión de Tareas | Rodrigo Berger</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0f1d;
+            --bg-card: #131b2e;
+            --border: #23304d;
+            --primary: #3b82f6;
+            --secondary: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --code-bg: #0b1120;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+        header {
+            border-bottom: 1px solid var(--border);
+            background: rgba(10, 15, 29, 0.85);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 65px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+        .brand-badge {
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-left: 20px;
+            transition: color 0.2s;
+        }
+        nav a:hover { color: var(--primary); }
+        .hero { padding: 60px 0 35px; text-align: center; }
+        .hero-tag {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            color: #60a5fa;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 5px 14px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+        }
+        .hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 12px; }
+        .hero p { color: var(--text-muted); font-size: 1.1rem; max-width: 680px; margin: 0 auto 25px; }
+        .meta-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
+        .meta-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+        .section-header { margin: 50px 0 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .section-header h2 { font-size: 1.6rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 20px 0; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 22px; }
+        .card h3 { font-size: 1.15rem; margin-bottom: 8px; color: #fff; }
+        .card p { color: var(--text-muted); font-size: 0.9rem; }
+        table { width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 20px 0; font-size: 0.9rem; }
+        th, td { padding: 12px 16px; border-bottom: 1px solid var(--border); text-align: left; }
+        th { background: #0f172a; color: #cbd5e1; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
+        .method { font-family: 'Fira Code', monospace; font-size: 0.75rem; font-weight: bold; padding: 3px 6px; border-radius: 4px; }
+        .m-post { background: #166534; color: #bbf7d0; }
+        .m-get { background: #1e40af; color: #bfdbfe; }
+        .theory-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .theory-box h3 { font-size: 1.15rem; margin-bottom: 10px; color: #fff; }
+        .theory-box p { color: #cbd5e1; font-size: 0.95rem; margin-bottom: 10px; }
+        .theory-box ul { margin-left: 20px; color: var(--text-muted); font-size: 0.9rem; }
+        .theory-box li { margin-bottom: 6px; }
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #38bdf8;
+            overflow-x: auto;
+            margin: 10px 0 20px;
+        }
+        footer { margin-top: 50px; border-top: 1px solid var(--border); padding-top: 25px; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container nav-content">
+            <a href="#" class="brand">
+                <span class="brand-badge">PFO 2</span>
+                <span>Sistema de Gestión de Tareas</span>
+            </a>
+            <nav>
+                <a href="#arquitectura">Arquitectura</a>
+                <a href="#endpoints">Endpoints</a>
+                <a href="#teoria">Respuestas Teóricas</a>
+                <a href="#ejecucion">Ejecución</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <div class="hero-tag">Programación sobre Redes - 3.° D</div>
+            <h1>Sistema de Gestión de Tareas</h1>
+            <p>API REST desarrollada en Flask con autenticación segura, contraseñas hasheadas (scrypt/PBKDF2), persistencia en SQLite y cliente de consola.</p>
+            <div class="meta-badges">
+                <div class="meta-item"><strong>Alumno:</strong> Rodrigo Berger</div>
+                <div class="meta-item"><strong>Servidor:</strong> Flask + SQLite</div>
+                <div class="meta-item"><strong>Seguridad:</strong> Werkzeug Password Hash</div>
+                <div class="meta-item"><strong>Cliente:</strong> Python Consola</div>
+            </div>
+        </section>
+
+        <section id="arquitectura">
+            <div class="section-header"><h2>Arquitectura</h2></div>
+            <div class="grid">
+                <div class="card">
+                    <h3>Servidor Flask (`servidor.py`)</h3>
+                    <p>API REST funcional que gestiona rutas de registro, inicio de sesión, pantalla HTML de bienvenida y administración de tareas.</p>
+                </div>
+                <div class="card">
+                    <h3>Seguridad Criptográfica</h3>
+                    <p>Hasheo con salt aleatorio en Werkzeug. Las contraseñas jamás se almacenan en texto plano en la base de datos.</p>
+                </div>
+                <div class="card">
+                    <h3>Persistencia SQLite (`tareas_db.sqlite`)</h3>
+                    <p>Tablas relacionales <code>usuarios</code> y <code>tareas</code> vinculadas por claves foráneas, con transacciones seguras ACID.</p>
+                </div>
+                <div class="card">
+                    <h3>Cliente de Consola (`cliente.py`)</h3>
+                    <p>Interfaz interactiva por línea de comandos para que el usuario pueda registrarse, ingresar y operar con la API.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="endpoints">
+            <div class="section-header"><h2>Endpoints de la API</h2></div>
+            <table>
+                <thead>
+                    <tr><th>Método</th><th>Ruta</th><th>Payload / Parámetros</th><th>Descripción</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><span class="method m-post">POST</span></td><td><code>/registro</code></td><td><code>{"usuario": "nombre", "contraseña": "1234"}</code></td><td>Registra usuario y almacena la clave hasheada en SQLite.</td></tr>
+                    <tr><td><span class="method m-post">POST</span></td><td><code>/login</code></td><td><code>{"usuario": "nombre", "contraseña": "1234"}</code></td><td>Verifica credenciales contra el hash y habilita el acceso.</td></tr>
+                    <tr><td><span class="method m-get">GET</span></td><td><code>/tareas</code></td><td><em>Ninguno</em></td><td>Muestra un HTML de bienvenida (requerimiento de consigna).</td></tr>
+                    <tr><td><span class="method m-get">GET</span></td><td><code>/api/tareas</code></td><td>Headers Auth</td><td>Retorna las tareas del usuario en formato JSON.</td></tr>
+                    <tr><td><span class="method m-post">POST</span></td><td><code>/api/tareas</code></td><td><code>{"titulo": "...", "descripcion": "..."}</code></td><td>Crea una nueva tarea persistente en SQLite.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="teoria">
+            <div class="section-header"><h2>Respuestas Conceptuales</h2></div>
+            <div class="theory-box">
+                <h3>1. ¿Por qué hashear contraseñas?</h3>
+                <p>Almacenar contraseñas en texto plano es una de las vulnerabilidades más críticas. El hashing criptográfico es fundamental por:</p>
+                <ul>
+                    <li><strong>Protección ante filtraciones de datos (Data Breaches):</strong> Si un atacante accede indebidamente a la base de datos o respaldos, solo obtiene hashes ininteligibles, impidiendo el uso de las claves reales de los usuarios.</li>
+                    <li><strong>Propiedad unidireccional (One-Way):</strong> Calcular <code>Hash = H(contraseña)</code> es directo, pero es inviable matemáticamente revertir <code>H⁻¹(Hash)</code> para conocer la clave. La validación se hace comparando hashes.</li>
+                    <li><strong>Salting contra Tablas de Arcoíris (Rainbow Tables):</strong> La librería añade una secuencia pseudoaleatoria única (*Salt*) por contraseña, asegurando que dos usuarios con la misma clave generen hashes distintos.</li>
+                    <li><strong>Resistencia a fuerza bruta:</strong> Algoritmos como scrypt o PBKDF2 agregan costo computacional deliberado para dificultar ataques masivos automatizados.</li>
+                </ul>
+            </div>
+            <div class="theory-box">
+                <h3>2. Ventajas de usar SQLite en este proyecto</h3>
+                <ul>
+                    <li><strong>Serverless:</strong> No necesita un demonio ni servicio corriendo en un puerto de red. La biblioteca interactúa directamente con el archivo.</li>
+                    <li><strong>Cero configuración:</strong> Integrado nativamente en Python con <code>import sqlite3</code>, sin dependencias de administración de motores externos.</li>
+                    <li><strong>Portabilidad total:</strong> Toda la base de datos es un único archivo autocontenido (<code>tareas_db.sqlite</code>), facilitando su distribución y corrección.</li>
+                    <li><strong>Garantía ACID:</strong> Asegura la consistencia y aislamiento de los datos ante cierres inesperados.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="ejecucion">
+            <div class="section-header"><h2>Instrucciones de Ejecución</h2></div>
+            <p style="color: var(--text-muted);">1. Iniciar el servidor API:</p>
+            <pre>python servidor.py</pre>
+            <p style="color: var(--text-muted);">2. En otra terminal, iniciar el cliente:</p>
+            <pre>python cliente.py</pre>
+        </section>
+
+        <footer>
+            <p>PFO 2 - Programación sobre Redes &copy; 2026 | Rodrigo Berger</p>
+        </footer>
+    </main>
+</body>
+</html>
