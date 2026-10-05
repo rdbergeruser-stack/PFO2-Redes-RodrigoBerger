@@ -17,6 +17,14 @@ DB_NAME = "tareas_db.sqlite"
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "pfo2_redes_berger_rodrigo_2026"
 
+# Soporte de CORS para que el cliente web (local o GitHub Pages) se comunique sin bloqueos
+@app.after_request
+def habilitar_cors(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Usuario, X-Contrasena, X-Password"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    return response
+
 # ==============================================================================
 # 1. FUNCIÓN: INICIALIZAR BASE DE DATOS SQLITE
 # ==============================================================================
@@ -113,6 +121,14 @@ def autenticar_usuario(req):
 # ==============================================================================
 # 3. ENDPOINTS DE LA API REST
 # ==============================================================================
+
+# Manejo de peticiones OPTIONS para CORS pre-flight
+@app.route("/registro", methods=["OPTIONS"])
+@app.route("/login", methods=["OPTIONS"])
+@app.route("/api/tareas", methods=["OPTIONS"])
+@app.route("/api/tareas/<int:tarea_id>", methods=["OPTIONS"])
+def preflight_cors(*args, **kwargs):
+    return "", 204
 
 # ------------------------------------------------------------------------------
 # 3.1 REGISTRO DE USUARIOS: POST /registro
@@ -232,137 +248,509 @@ def iniciar_sesion():
     }), 200
 
 # ------------------------------------------------------------------------------
-# 3.3 GESTIÓN DE TAREAS: GET /tareas (HTML DE BIENVENIDA)
+# 3.3 GESTIÓN DE TAREAS: GET /tareas (HTML DE BIENVENIDA + CLIENTE WEB INTERACTIVO)
 # ------------------------------------------------------------------------------
 PLANTILLA_BIENVENIDA = """<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenida - Sistema de Gestión de Tareas</title>
+    <title>Sistema de Gestión de Tareas - Cliente Web & API</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --primary: #2563eb;
-            --text: #f8fafc;
-            --muted: #94a3b8;
-            --accent: #10b981;
-            --border: #334155;
+            --bg-dark: #0a0f1d;
+            --bg-card: #131b2e;
+            --bg-card-hover: #18223b;
+            --border: #23304d;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --code-bg: #0b1120;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body {
-            background-color: var(--bg);
-            color: var(--text);
+            background-color: var(--bg-dark);
+            color: var(--text-main);
             min-height: 100vh;
+            padding: 30px 15px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
         }
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            max-width: 750px;
-            width: 100%;
-            padding: 35px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        .container { max-width: 900px; width: 100%; }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
         }
         .badge {
-            background: rgba(37, 99, 235, 0.2);
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.4);
             color: #60a5fa;
-            border: 1px solid rgba(37, 99, 235, 0.4);
-            padding: 4px 12px;
-            border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 600;
+            padding: 5px 14px;
+            border-radius: 20px;
             display: inline-block;
             margin-bottom: 12px;
         }
-        h1 { font-size: 2rem; margin-bottom: 8px; }
-        .sub { color: var(--muted); margin-bottom: 24px; }
-        .welcome {
+        h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 6px; }
+        .sub { color: var(--text-muted); font-size: 1rem; }
+
+        .welcome-card {
             background: rgba(16, 185, 129, 0.1);
-            border-left: 4px solid var(--accent);
-            padding: 18px;
-            border-radius: 6px;
+            border-left: 4px solid var(--secondary);
+            padding: 18px 22px;
+            border-radius: 8px;
             margin-bottom: 25px;
         }
-        .welcome h2 { color: #34d399; font-size: 1.25rem; margin-bottom: 6px; }
-        .grid {
+        .welcome-card h2 { color: #34d399; font-size: 1.25rem; margin-bottom: 4px; }
+        .welcome-card p { color: #cbd5e1; font-size: 0.95rem; }
+
+        .grid-info {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
-        .box {
-            background: rgba(15, 23, 42, 0.6);
+        .info-box {
+            background: var(--bg-card);
             border: 1px solid var(--border);
+            border-radius: 8px;
             padding: 15px;
-            border-radius: 8px;
         }
-        .box span { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; }
-        .box p { font-size: 1.05rem; font-weight: bold; margin-top: 4px; }
-        .endpoints {
-            background: rgba(15, 23, 42, 0.4);
+        .info-box span { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+        .info-box p { font-size: 1.1rem; font-weight: 700; margin-top: 4px; }
+
+        /* Panels */
+        .panel {
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            padding: 18px;
-            border-radius: 8px;
-            font-size: 0.9rem;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 25px;
         }
-        .endpoints h3 { margin-bottom: 10px; font-size: 1rem; color: #cbd5e1; }
-        .endpoint-row { padding: 6px 0; border-bottom: 1px dashed var(--border); display: flex; gap: 10px; }
-        .endpoint-row:last-child { border-bottom: none; }
-        .method { font-weight: bold; font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; }
-        .post { background: #166534; color: #bbf7d0; }
-        .get { background: #1e40af; color: #bfdbfe; }
-        footer { margin-top: 25px; text-align: center; color: var(--muted); font-size: 0.85rem; }
+        .panel h3 { font-size: 1.2rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+        }
+        @media (max-width: 650px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+        input {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus { border-color: var(--primary); }
+        button {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            height: 42px;
+        }
+        button:hover { background: var(--primary-hover); }
+        button.btn-secondary { background: #334155; }
+        button.btn-secondary:hover { background: #475569; }
+        button.btn-success { background: #059669; }
+        button.btn-success:hover { background: #10b981; }
+        button.btn-danger { background: #dc2626; padding: 6px 12px; height: auto; font-size: 0.8rem; }
+        button.btn-danger:hover { background: #ef4444; }
+
+        .auth-status {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Task Cards */
+        .task-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .task-item {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+        .task-info h4 { font-size: 1rem; color: #fff; margin-bottom: 3px; }
+        .task-info p { font-size: 0.85rem; color: var(--text-muted); }
+        .task-status-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        .st-pendiente { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+        .st-completada { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+        .task-actions { display: flex; gap: 8px; align-items: center; }
+
+        /* Log console */
+        .log-box {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #38bdf8;
+            max-height: 160px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        footer { margin-top: 30px; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <span class="badge">Programación sobre Redes - 3.° D</span>
-        <h1>Sistema de Gestión de Tareas</h1>
-        <p class="sub">PFO 2 | API REST Flask con Base de Datos SQLite</p>
-
-        <div class="welcome">
-            <h2>👋 ¡Bienvenido/a al Sistema de Gestión de Tareas!</h2>
-            <p>La API REST y la Base de Datos SQLite se encuentran operativas. Has accedido exitosamente al endpoint <strong>GET /tareas</strong>.</p>
+    <div class="container">
+        <div class="header">
+            <span class="badge">Programación sobre Redes - 3.° D</span>
+            <h1>Sistema de Gestión de Tareas</h1>
+            <p class="sub">PFO 2 | Cliente Web Interactivo & API REST Flask con SQLite</p>
         </div>
 
-        <div class="grid">
-            <div class="box">
+        <div class="welcome-card">
+            <h2>👋 ¡Bienvenido/a al Sistema de Gestión de Tareas!</h2>
+            <p>Has accedido al endpoint <strong>GET /tareas</strong>. Desde este panel web puedes interactuar en vivo con la API REST y la base de datos SQLite.</p>
+        </div>
+
+        <div class="grid-info">
+            <div class="info-box">
                 <span>Alumno</span>
                 <p>Rodrigo Berger</p>
             </div>
-            <div class="box">
+            <div class="info-box">
                 <span>Base de Datos</span>
-                <p>SQLite (tareas_db.sqlite)</p>
+                <p>SQLite (Persistente)</p>
             </div>
-            <div class="box">
+            <div class="info-box">
                 <span>Seguridad</span>
                 <p>Hash scrypt / PBKDF2</p>
             </div>
-            <div class="box">
+            <div class="info-box">
                 <span>Estado API</span>
                 <p style="color: #34d399;">● Online (200 OK)</p>
             </div>
         </div>
 
-        <div class="endpoints">
-            <h3>Endpoints Disponibles:</h3>
-            <div class="endpoint-row"><span class="method post">POST</span> <code>/registro</code>: Alta de usuario con clave hasheada.</div>
-            <div class="endpoint-row"><span class="method post">POST</span> <code>/login</code>: Validación de credenciales y acceso a tareas.</div>
-            <div class="endpoint-row"><span class="method get">GET</span> <code>/tareas</code>: HTML de bienvenida.</div>
-            <div class="endpoint-row"><span class="method get">GET</span> <code>/api/tareas</code>: Listado de tareas (JSON).</div>
-            <div class="endpoint-row"><span class="method post">POST</span> <code>/api/tareas</code>: Creación de nueva tarea (JSON).</div>
+        <!-- Barra de Estado de Sesión -->
+        <div class="auth-status">
+            <div>
+                <span style="color: var(--text-muted); font-size: 0.85rem;">Usuario activo:</span>
+                <strong id="user-display" style="color: #60a5fa; margin-left: 6px;">[No autenticado]</strong>
+            </div>
+            <div id="logout-container" style="display: none;">
+                <button onclick="cerrarSesion()" class="btn-secondary" style="height: 32px; padding: 4px 12px; font-size: 0.8rem;">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- Panel 1: Registro & Login -->
+        <div class="panel" id="auth-panel">
+            <h3>🔐 Autenticación de Usuario</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <input type="text" id="auth-user" placeholder="Ej: nombre" value="nombre">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="auth-pass" placeholder="Ej: 1234" value="1234">
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="ejecutarLogin()">Iniciar Sesión</button>
+                    <button onclick="ejecutarRegistro()" class="btn-secondary">Registrarse</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 2: Gestión de Tareas (Desbloqueado tras login) -->
+        <div class="panel" id="tasks-panel">
+            <h3>📋 Gestión de Tareas (CRUD en SQLite)</h3>
+            
+            <div id="tasks-locked-msg" style="color: var(--text-muted); font-size: 0.95rem;">
+                Inicia sesión en el formulario superior para crear y consultar tus tareas en tiempo real.
+            </div>
+
+            <div id="tasks-content" style="display: none;">
+                <!-- Crear Tarea -->
+                <div class="form-grid" style="margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label>Título de la Tarea</label>
+                        <input type="text" id="task-title" placeholder="Ej: Estudiar para el examen de Redes">
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción (Opcional)</label>
+                        <input type="text" id="task-desc" placeholder="Ej: Repasar sockets, HTTP y REST">
+                    </div>
+                    <button onclick="crearTarea()" class="btn-success">+ Crear Tarea</button>
+                </div>
+
+                <!-- Lista de Tareas -->
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="font-size: 0.95rem; color: #cbd5e1;">Tus Tareas Registradas:</h4>
+                    <button onclick="cargarTareas()" class="btn-secondary" style="height: 30px; padding: 4px 10px; font-size: 0.8rem;">↻ Refrescar</button>
+                </div>
+                <div id="task-list-container" class="task-list">
+                    <!-- Se rellena con JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Registro de Eventos HTTP (Consola) -->
+        <div class="panel">
+            <h3>📡 Registro de Peticiones HTTP en Vivo</h3>
+            <div id="http-log" class="log-box">[SISTEMA] Cliente web listo. Esperando peticiones...</div>
         </div>
 
         <footer>
-            <p>Desarrollado para Programación sobre Redes &copy; 2026 - Rodrigo Berger</p>
+            <p>PFO 2: Sistema de Gestión de Tareas | Programación sobre Redes &copy; 2026 - Rodrigo Berger</p>
         </footer>
     </div>
+
+    <script>
+        let currentUser = null;
+        let currentPass = null;
+
+        function logHttp(mensaje) {
+            const box = document.getElementById("http-log");
+            const time = new Date().toLocaleTimeString();
+            box.textContent = `[${time}] ${mensaje}\n` + box.textContent;
+        }
+
+        async function ejecutarRegistro() {
+            const user = document.getElementById("auth-user").value.trim();
+            const pass = document.getElementById("auth-pass").value.trim();
+
+            if (!user || !pass) {
+                alert("Por favor ingresa usuario y contraseña.");
+                return;
+            }
+
+            try {
+                logHttp(`POST /registro -> Enviando {"usuario": "${user}", "contraseña": "****"}...`);
+                const res = await fetch("/registro", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ usuario: user, "contraseña": pass })
+                });
+                const data = await res.json();
+                
+                if (res.status === 201) {
+                    logHttp(`[ÉXITO 201] ${data.mensaje} | ID: ${data.usuario.id} | Clave hasheada en SQLite.`);
+                    alert(`¡Usuario '${user}' registrado con éxito! Ahora puedes iniciar sesión.`);
+                } else {
+                    logHttp(`[ERROR ${res.status}] ${data.mensaje}`);
+                    alert(`Error (${res.status}): ${data.mensaje}`);
+                }
+            } catch (err) {
+                logHttp(`[ERROR RED] No se pudo conectar con el servidor: ${err}`);
+            }
+        }
+
+        async function ejecutarLogin() {
+            const user = document.getElementById("auth-user").value.trim();
+            const pass = document.getElementById("auth-pass").value.trim();
+
+            if (!user || !pass) {
+                alert("Por favor ingresa usuario y contraseña.");
+                return;
+            }
+
+            try {
+                logHttp(`POST /login -> Verificando credenciales de '${user}'...`);
+                const res = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ usuario: user, "contraseña": pass })
+                });
+                const data = await res.json();
+
+                if (res.status === 200) {
+                    currentUser = user;
+                    currentPass = pass;
+                    logHttp(`[ÉXITO 200] ${data.mensaje} | Acceso a tareas concedido.`);
+
+                    // Actualizar interfaz
+                    document.getElementById("user-display").textContent = currentUser;
+                    document.getElementById("logout-container").style.display = "block";
+                    document.getElementById("tasks-locked-msg").style.display = "none";
+                    document.getElementById("tasks-content").style.display = "block";
+
+                    // Cargar tareas del usuario
+                    cargarTareas();
+                } else {
+                    logHttp(`[ERROR ${res.status}] ${data.mensaje}`);
+                    alert(`Error de autenticación: ${data.mensaje}`);
+                }
+            } catch (err) {
+                logHttp(`[ERROR RED] No se pudo conectar con el servidor: ${err}`);
+            }
+        }
+
+        function cerrarSesion() {
+            currentUser = null;
+            currentPass = null;
+            document.getElementById("user-display").textContent = "[No autenticado]";
+            document.getElementById("logout-container").style.display = "none";
+            document.getElementById("tasks-locked-msg").style.display = "block";
+            document.getElementById("tasks-content").style.display = "none";
+            logHttp("[INFO] Sesión cerrada.");
+        }
+
+        async function cargarTareas() {
+            if (!currentUser) return;
+            try {
+                logHttp(`GET /api/tareas -> Consultando tareas de '${currentUser}'...`);
+                const res = await fetch("/api/tareas", {
+                    method: "GET",
+                    headers: {
+                        "X-Usuario": currentUser,
+                        "X-Contrasena": currentPass
+                    }
+                });
+                const data = await res.json();
+                
+                const container = document.getElementById("task-list-container");
+                container.innerHTML = "";
+
+                if (!data.tareas || data.tareas.length === 0) {
+                    container.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem; padding: 10px 0;">No tienes tareas registradas aún. ¡Crea una arriba!</p>`;
+                    return;
+                }
+
+                data.tareas.forEach(t => {
+                    const isDone = t.estado === "completada";
+                    const badgeClass = isDone ? "st-completada" : "st-pendiente";
+                    const item = document.createElement("div");
+                    item.className = "task-item";
+                    item.innerHTML = `
+                        <div class="task-info">
+                            <h4>${t.titulo}</h4>
+                            <p>${t.descripcion || "Sin descripción adicional"} • Creada: ${t.fecha_creacion}</p>
+                        </div>
+                        <div class="task-actions">
+                            <span class="task-status-badge ${badgeClass}">${t.estado}</span>
+                            ${!isDone ? `<button onclick="completarTarea(${t.id})" class="btn-success" style="padding: 5px 10px; height: auto; font-size: 0.8rem;">✓ Completar</button>` : ""}
+                            <button onclick="eliminarTarea(${t.id})" class="btn-danger">✕</button>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+                logHttp(`[ÉXITO 200] Se cargaron ${data.total_tareas} tareas.`);
+            } catch (err) {
+                logHttp(`[ERROR] Falló carga de tareas: ${err}`);
+            }
+        }
+
+        async function crearTarea() {
+            if (!currentUser) return;
+            const title = document.getElementById("task-title").value.trim();
+            const desc = document.getElementById("task-desc").value.trim();
+
+            if (!title) {
+                alert("El título de la tarea es obligatorio.");
+                return;
+            }
+
+            try {
+                logHttp(`POST /api/tareas -> Creando tarea '${title}'...`);
+                const res = await fetch("/api/tareas", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Usuario": currentUser,
+                        "X-Contrasena": currentPass
+                    },
+                    body: JSON.stringify({ titulo: title, descripcion: desc })
+                });
+                const data = await res.json();
+                if (res.status === 201) {
+                    logHttp(`[ÉXITO 201] Tarea #${data.tarea.id} creada exitosamente en SQLite.`);
+                    document.getElementById("task-title").value = "";
+                    document.getElementById("task-desc").value = "";
+                    cargarTareas();
+                } else {
+                    logHttp(`[ERROR ${res.status}] ${data.mensaje}`);
+                }
+            } catch (err) {
+                logHttp(`[ERROR] ${err}`);
+            }
+        }
+
+        async function completarTarea(id) {
+            try {
+                logHttp(`PUT /api/tareas/${id} -> Marcando tarea como completada...`);
+                const res = await fetch(`/api/tareas/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Usuario": currentUser,
+                        "X-Contrasena": currentPass
+                    },
+                    body: JSON.stringify({ estado: "completada" })
+                });
+                const data = await res.json();
+                if (res.status === 200) {
+                    logHttp(`[ÉXITO 200] Tarea #${id} actualizada a 'completada'.`);
+                    cargarTareas();
+                }
+            } catch (err) {
+                logHttp(`[ERROR] ${err}`);
+            }
+        }
+
+        async function eliminarTarea(id) {
+            if (!confirm(`¿Deseas eliminar la tarea #${id}?`)) return;
+            try {
+                logHttp(`DELETE /api/tareas/${id} -> Eliminando tarea...`);
+                const res = await fetch(`/api/tareas/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "X-Usuario": currentUser,
+                        "X-Contrasena": currentPass
+                    }
+                });
+                const data = await res.json();
+                if (res.status === 200) {
+                    logHttp(`[ÉXITO 200] Tarea #${id} eliminada de SQLite.`);
+                    cargarTareas();
+                }
+            } catch (err) {
+                logHttp(`[ERROR] ${err}`);
+            }
+        }
+    </script>
 </body>
 </html>
 """
@@ -373,6 +761,8 @@ def ver_tareas_bienvenida():
     Endpoint: GET /tareas
     Consigna:
     - "GET /tareas: Muestre un html de bienvenida"
+    Retorna la aplicación cliente web interactiva que se comunica directamente
+    con la API REST y SQLite.
     """
     if request.headers.get("Accept") == "application/json" or request.args.get("format") == "json":
         return jsonify({
@@ -510,7 +900,7 @@ def iniciar_servidor():
     print(f"[SERVIDOR] Escuchando en http://{HOST}:{PORT}...")
     print(f"  • POST http://{HOST}:{PORT}/registro")
     print(f"  • POST http://{HOST}:{PORT}/login")
-    print(f"  • GET  http://{HOST}:{PORT}/tareas (HTML de Bienvenida)")
+    print(f"  • GET  http://{HOST}:{PORT}/tareas (Cliente Web & Bienvenida)")
     print("=" * 65)
     app.run(host=HOST, port=PORT, debug=False)
 
