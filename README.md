@@ -147,6 +147,17 @@ python cliente.py
 ```
 Sigue el menú interactivo para registrar un usuario, iniciar sesión, ver la bienvenida y gestionar tareas.
 
+### 👤 Usuarios y Credenciales de Prueba
+
+Para probar el inicio de sesión y acceso a tareas de inmediato, la base de datos SQLite ya cuenta con los siguientes usuarios registrados:
+
+| Usuario | Contraseña |
+|---|---|
+| `Rodrigo` | `1234` |
+| `Berger` | `1234` |
+
+*(También es posible registrar cualquier otro usuario nuevo desde la Opción 1 del cliente de consola o desde el cliente web).*
+
 ---
 
 ## 📸 6. Capturas de Pantalla de Pruebas Exitosas
@@ -177,10 +188,10 @@ Flujo integral de creación (`POST /api/tareas`), consulta (`GET /api/tareas`) y
 
 ---
 
-## 🌐 7. Alojamiento en GitHub Pages
+## 🌐 7. Enlaces del Proyecto
 
-Para publicar el proyecto en GitHub Pages:
-1. Sube los archivos a tu repositorio en GitHub.
-2. Ingresa a **Settings** -> **Pages** en el repositorio.
-3. En **Build and deployment / Branch**, selecciona la rama `main` y la carpeta `/(root)`.
-4. Haz clic en **Save** para publicar el sitio (`index.html`).
+- **Repositorio en GitHub:**  
+  [https://github.com/rdbergeruser-stack/PFO2-Redes-RodrigoBerger](https://github.com/rdbergeruser-stack/PFO2-Redes-RodrigoBerger)
+
+- **Sitio publicado en GitHub Pages:**  
+  [https://rdbergeruser-stack.github.io/PFO2-Redes-RodrigoBerger/](https://rdbergeruser-stack.github.io/PFO2-Redes-RodrigoBerger/)
