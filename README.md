@@ -1,46 +1,39 @@
-# PFO 2: Sistema de Gestión de Tareas con API REST y Base de Datos
+# PFO 2: Sistema de Gestión de Usuarios con API REST y Base de Datos
 
 **Materia:** Programación sobre redes - 3.° D  
 **Alumno:** Rodrigo Berger  
-**Tecnologías:** Python 3, Flask (API REST), SQLite3, Criptografía y Hashing (`werkzeug.security` - PBKDF2/scrypt), Cliente HTTP (`requests`).
+**Tecnologías:** Python 3, Flask (API REST), SQLite3, Criptografía y Hashing (`werkzeug.security` - PBKDF2/scrypt), Cliente HTTP (`requests`), HTML5/CSS/JavaScript.
 
 ---
 
 ## 📌 1. Descripción del Proyecto
 
-Este trabajo práctico implementa una arquitectura **Cliente-Servidor** basada en una **API REST** desarrollada con **Flask** y respaldada por persistencia en una base de datos relacional **SQLite** (`tareas_db.sqlite`).
+Este trabajo práctico implementa una arquitectura **Cliente-Servidor** basada en una **API REST** desarrollada con **Flask** y respaldada por persistencia en una base de datos relacional **SQLite** (`usuarios.db`).
 
-El sistema ofrece autenticación de usuarios con almacenamiento protegido mediante **hashing criptográfico unidireccional y salting** (sin texto plano), control de acceso y gestión de tareas, junto con un cliente interactivo en consola y una vista web de bienvenida.
+El sistema implementa de forma limpia y directa los 3 requerimientos fundamentales:
+1. **Crear usuario** con almacenamiento protegido mediante **hashing criptográfico unidireccional y salting** (nunca en texto plano).
+2. **Iniciar sesión (Login)** validando credenciales contra el hash almacenado en la base de datos.
+3. **Listado de usuarios**, protegido para usuarios con sesión iniciada (HTTP 401 Unauthorized si no está autenticado).
 
 ### Componentes:
-- **`servidor.py`**: API REST en Flask que gestiona los endpoints de registro, login, bienvenida y tareas, persistiendo los datos en SQLite.
-- **`cliente.py`**: Cliente de consola con menú interactivo para comunicarse con la API de forma intuitiva.
-- **`index.html`**: Página web estática para alojar la presentación del proyecto en **GitHub Pages**.
-- **`tareas_db.sqlite`**: Base de datos relacional con tablas `usuarios` y `tareas`.
+- **`servidor.py`**: Servidor API REST en Flask que gestiona los endpoints de registro, login y listado de usuarios con base de datos SQLite.
+- **`cliente.py`**: Cliente de consola con menú interactivo para consumir la API fácilmente.
+- **`index.html`**: Cliente web interactivo con formularios de registro, login, tabla dinámica de usuarios y consola de peticiones HTTP en tiempo real.
+- **`usuarios.db`**: Base de datos relacional SQLite con la tabla `usuarios`.
 
 ---
 
 ## 🗄️ 2. Estructura de la Base de Datos (SQLite)
 
-La persistencia se realiza en `tareas_db.sqlite`:
+La persistencia se realiza en `usuarios.db`:
 
 ### Tabla: `usuarios`
 | Campo | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | `id` | `INTEGER` | `PRIMARY KEY AUTOINCREMENT` | Identificador único del usuario |
 | `usuario` | `TEXT` | `UNIQUE NOT NULL` | Nombre de usuario |
-| `contrasena_hash` | `TEXT` | `NOT NULL` | Hash seguro generado con salt (scrypt/PBKDF2) |
+| `contrasena_hash` | `TEXT` | `NOT NULL` | Hash seguro generado con salt (PBKDF2/scrypt) |
 | `fecha_registro` | `TEXT` | `NOT NULL` | Fecha y hora del registro |
-
-### Tabla: `tareas`
-| Campo | Tipo | Restricciones | Descripción |
-|---|---|---|---|
-| `id` | `INTEGER` | `PRIMARY KEY AUTOINCREMENT` | Identificador único de la tarea |
-| `usuario_id` | `INTEGER` | `NOT NULL, FOREIGN KEY` | Vinculación con el usuario creador |
-| `titulo` | `TEXT` | `NOT NULL` | Título de la tarea |
-| `descripcion` | `TEXT` | - | Detalle complementario |
-| `estado` | `TEXT` | `DEFAULT 'pendiente'` | Estado (`pendiente` o `completada`) |
-| `fecha_creacion` | `TEXT` | `NOT NULL` | Fecha y hora de alta |
 
 ---
 
@@ -73,15 +66,12 @@ Comprueba credenciales contra el hash en base de datos y habilita el acceso.
   - `200 OK`: Inicio de sesión exitoso.
   - `401 Unauthorized`: Usuario o contraseña incorrectos.
 
-### 3. Pantalla de Bienvenida: `GET /tareas`
-Requerimiento de consigna: *"GET /tareas: Muestre un html de bienvenida"*.
-- **Respuesta (`200 OK`):** Retorna la página HTML estilizada de bienvenida con el estado del sistema.
-
-### 4. Listado y Gestión de Tareas (API REST)
-- `GET /api/tareas`: Retorna el listado de tareas del usuario autenticado en JSON.
-- `POST /api/tareas`: Crea una nueva tarea (`{"titulo": "...", "descripcion": "..."}`).
-- `PUT /api/tareas/<id>`: Actualiza estado de la tarea (ej: `{"estado": "completada"}`).
-- `DELETE /api/tareas/<id>`: Elimina una tarea.
+### 3. Listado de Usuarios: `GET /usuarios` *(Requiere Sesión Iniciada)*
+Retorna el listado de todos los usuarios registrados. Por seguridad, no incluye contraseñas ni hashes.
+- **Cabeceras de autenticación requeridas:** `X-Usuario` y `X-Contrasena` (o HTTP Basic Auth).
+- **Respuestas:**
+  - `200 OK`: Retorna el listado JSON de usuarios (`id`, `usuario`, `fecha_registro`).
+  - `401 Unauthorized`: Si se intenta acceder sin haber iniciado sesión.
 
 ---
 
@@ -116,7 +106,7 @@ Para el contexto y alcance de este proyecto, SQLite aporta ventajas clave:
    No requiere credenciales de red, administración de permisos ni cadenas complejas de conexión. Viene integrado de forma nativa en la biblioteca estándar de Python (`import sqlite3`).
 
 3. **Portabilidad y Simplicidad de Entrega:**  
-   Toda la base de datos se almacena en un único archivo autocontenido (`tareas_db.sqlite`). Esto facilita su entrega, respaldo y ejecución en cualquier equipo sin instalar infraestructura adicional.
+   Toda la base de datos se almacena en un único archivo autocontenido (`usuarios.db`). Esto facilita su entrega, respaldo y ejecución en cualquier equipo sin instalar infraestructura adicional.
 
 4. **Garantía ACID:**  
    Cumple estrictamente con las propiedades de Atomicidad, Consistencia, Aislamiento y Durabilidad (**ACID**), protegiendo la integridad de los datos ante apagados abruptos o errores.
@@ -131,7 +121,7 @@ Para el contexto y alcance de este proyecto, SQLite aporta ventajas clave:
 ### Requisitos
 Instalar dependencias necesarias:
 ```bash
-pip install flask requests
+pip install flask requests werkzeug
 ```
 
 ### Paso 1: Iniciar el Servidor API
@@ -139,56 +129,39 @@ En una terminal:
 ```bash
 python servidor.py
 ```
+El servidor quedará a la escucha en `http://localhost:5000`.
 
-### Paso 2: Iniciar el Cliente de Consola
+### Paso 2: Opciones de Cliente
+
+#### Opción A: Cliente de Consola
 En otra terminal distinta:
 ```bash
 python cliente.py
 ```
-Sigue el menú interactivo para registrar un usuario, iniciar sesión, ver la bienvenida y gestionar tareas.
+Sigue el menú interactivo para:
+1. Registrar un usuario.
+2. Iniciar sesión.
+3. Listar usuarios (comprobando el acceso protegido).
 
-### 👤 Usuarios y Credenciales de Prueba
+#### Opción B: Cliente Web
+Abrir en el navegador web el archivo `index.html` o ingresar directamente a:
+```
+http://localhost:5000
+```
+Permite probar interactivamente el registro, login y visualización de la lista de usuarios con log HTTP en vivo.
 
-Para probar el inicio de sesión y acceso a tareas de inmediato, la base de datos SQLite ya cuenta con los siguientes usuarios registrados:
+### 👤 Usuarios y Credenciales de Prueba Iniciales
+
+Para probar el inicio de sesión y el listado de inmediato, la base de datos se inicializa con:
 
 | Usuario | Contraseña |
 |---|---|
 | `Rodrigo` | `1234` |
 | `Berger` | `1234` |
 
-*(También es posible registrar cualquier otro usuario nuevo desde la Opción 1 del cliente de consola o desde el cliente web).*
-
 ---
 
-## 📸 6. Capturas de Pantalla de Pruebas Exitosas
-
-### 1. Inicialización del Servidor y Cliente
-Puesta en marcha del servidor API Flask escuchando en `http://localhost:5000` con la base de datos SQLite inicializada, junto al menú interactivo de `cliente.py`.
-![01 - Servidor y Cliente Iniciados](Capturas/01.jpg)
-
-### 2. Formulario de Registro de Usuario
-Selección de la Opción 1 en el cliente de consola e ingreso de los datos requeridos (`usuario: Berger`, `contraseña: 1234`).
-![02 - Formulario de Registro](Capturas/02.jpg)
-
-### 3. Registro Exitoso (`POST /registro` 201 Created)
-Confirmación del alta del usuario en el cliente y verificación en el log del servidor indicando que la contraseña fue almacenada con hash seguro en SQLite.
-![03 - Registro Exitoso con Hash](Capturas/03.jpg)
-
-### 4. Inicio de Sesión (`POST /login` 200 OK)
-Verificación de credenciales contra el hash en base de datos SQLite y habilitación de la sesión para el acceso a las tareas.
-![04 - Login Exitoso](Capturas/04.jpg)
-
-### 5. Consulta de Bienvenida (`GET /tareas` 200 OK)
-Petición al endpoint `GET /tareas` desde el cliente, obteniendo la respuesta HTTP 200 con el contenido HTML de bienvenida.
-![05 - Endpoint GET /tareas](Capturas/05.jpg)
-
-### 6. Gestión Completa de Tareas y Cliente Web Interactivo
-Flujo integral de creación (`POST /api/tareas`), consulta (`GET /api/tareas`) y actualización a completada (`PUT /api/tareas/1`), visualizando las respuestas en la consola del cliente, los logs del servidor y el cliente web interactivo.
-![06 - Gestión Completa de Tareas](Capturas/06.jpg)
-
----
-
-## 🌐 7. Enlaces del Proyecto
+## 🌐 6. Enlaces del Proyecto
 
 - **Repositorio en GitHub:**  
   [https://github.com/rdbergeruser-stack/PFO2-Redes-RodrigoBerger](https://github.com/rdbergeruser-stack/PFO2-Redes-RodrigoBerger)
