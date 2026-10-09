@@ -184,10 +184,6 @@ Verificación de credenciales contra el hash en base de datos SQLite y actualiza
 Petición al endpoint protegido `GET /usuarios` enviando las credenciales de sesión activa, visualizando la lista de usuarios registrados sin exponer datos sensibles.
 ![05 - Listado de Usuarios](Capturas/05.jpg)
 
-### 6. Flujo Completo y Cliente Web Interactivo
-Ejecución integral visualizando las peticiones en vivo en las terminales y la interacción simultánea en el cliente web (`index.html`) con tabla dinámica y consola de auditoría HTTP en tiempo real.
-![06 - Cliente Web y Logs](Capturas/06.jpg)
-
 ---
 
 ## 🌐 7. Enlaces del Proyecto
