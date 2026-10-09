@@ -162,7 +162,35 @@ Para probar el inicio de sesión y el listado de inmediato, la base de datos se 
 
 ---
 
-## 🌐 6. Enlaces del Proyecto
+## 📸 6. Capturas de Pantalla de Pruebas Exitosas
+
+### 1. Inicialización del Servidor y Cliente
+Puesta en marcha del servidor API Flask en `http://localhost:5000` con la base de datos `usuarios.db` inicializada, junto al menú interactivo de `cliente.py` indicando la institución **IFTS N.° 29**.
+![01 - Servidor y Cliente Iniciados](Capturas/01.jpg)
+
+### 2. Formulario de Registro de Usuario
+Selección de la Opción 1 en el cliente de consola e ingreso de credenciales para dar de alta un nuevo usuario (`Berger`, `1234`).
+![02 - Formulario de Registro](Capturas/02.jpg)
+
+### 3. Registro Exitoso (`POST /registro` 201 Created)
+Confirmación del alta en el cliente y verificación en el log del servidor indicando el almacenamiento seguro mediante hash criptográfico con salt en SQLite.
+![03 - Registro Exitoso con Hash](Capturas/03.jpg)
+
+### 4. Inicio de Sesión (`POST /login` 200 OK)
+Verificación de credenciales contra el hash en base de datos SQLite y actualización del estado de sesión activa a `[Berger]`.
+![04 - Login Exitoso](Capturas/04.jpg)
+
+### 5. Listado Protegido de Usuarios (`GET /usuarios` 200 OK)
+Petición al endpoint protegido `GET /usuarios` enviando las credenciales de sesión activa, visualizando la lista de usuarios registrados sin exponer datos sensibles.
+![05 - Listado de Usuarios](Capturas/05.jpg)
+
+### 6. Flujo Completo y Cliente Web Interactivo
+Ejecución integral visualizando las peticiones en vivo en las terminales y la interacción simultánea en el cliente web (`index.html`) con tabla dinámica y consola de auditoría HTTP en tiempo real.
+![06 - Cliente Web y Logs](Capturas/06.jpg)
+
+---
+
+## 🌐 7. Enlaces del Proyecto
 
 - **Repositorio en GitHub:**  
   [https://github.com/rdbergeruser-stack/PFO2-Redes-RodrigoBerger](https://github.com/rdbergeruser-stack/PFO2-Redes-RodrigoBerger)
