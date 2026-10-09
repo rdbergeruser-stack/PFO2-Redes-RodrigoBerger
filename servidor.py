@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # ==============================================================================
 # CONFIGURACIÓN DEL SERVIDOR
 # ==============================================================================
+# Institución: IFTS N.° 29
 # Materia: Programación sobre redes - 3.° D
 # Alumno: Rodrigo Berger
 # Proyecto: PFO 2 - Sistema de Usuarios con API REST y SQLite
@@ -264,7 +265,7 @@ def listar_usuarios():
 if __name__ == "__main__":
     print("=" * 60)
     print("   SERVIDOR API REST - SISTEMA DE GESTIÓN DE USUARIOS")
-    print("   Materia: Programación sobre redes - 3.° D | Rodrigo Berger")
+    print("   IFTS N.° 29 | Prog. sobre redes - 3.° D | Rodrigo Berger")
     print("=" * 60)
     inicializar_db()
     print(f"[SERVIDOR] Corriendo en http://{HOST}:{PORT}")

@@ -9,6 +9,7 @@ except ImportError:
 # ==============================================================================
 # CLIENTE DE CONSOLA
 # ==============================================================================
+# Institución: IFTS N.° 29
 # Materia: Programación sobre redes - 3.° D
 # Alumno: Rodrigo Berger
 # Proyecto: PFO 2 - Cliente de Consola para API REST
@@ -137,7 +138,7 @@ def main():
 
     print("=" * 60)
     print("   CLIENTE DE CONSOLA - SISTEMA DE GESTIÓN DE USUARIOS")
-    print("   Materia: Programación sobre redes - 3.° D | Rodrigo Berger")
+    print("   IFTS N.° 29 | Prog. sobre redes - 3.° D | Rodrigo Berger")
     print("=" * 60)
 
     while True:

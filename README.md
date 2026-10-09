@@ -1,5 +1,6 @@
 # PFO 2: Sistema de Gestión de Usuarios con API REST y Base de Datos
 
+**Institución:** IFTS N.° 29  
 **Materia:** Programación sobre redes - 3.° D  
 **Alumno:** Rodrigo Berger  
 **Tecnologías:** Python 3, Flask (API REST), SQLite3, Criptografía y Hashing (`werkzeug.security` - PBKDF2/scrypt), Cliente HTTP (`requests`), HTML5/CSS/JavaScript.
