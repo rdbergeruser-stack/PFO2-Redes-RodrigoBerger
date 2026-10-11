@@ -157,7 +157,6 @@ Para probar el inicio de sesión y el listado de inmediato, la base de datos se 
 
 | Usuario | Contraseña |
 |---|---|
-| `Rodrigo` | `1234` |
 | `Berger` | `1234` |
 
 ---
