@@ -166,23 +166,19 @@ Para probar el inicio de sesión y el listado de inmediato, la base de datos se 
 
 ### 1. Inicialización del Servidor y Cliente
 Puesta en marcha del servidor API Flask en `http://localhost:5000` con la base de datos `usuarios.db` inicializada, junto al menú interactivo de `cliente.py` indicando la institución **IFTS N.° 29**.
-![01 - Servidor y Cliente Iniciados](Capturas/01.jpg)
+![01 - Servidor y Cliente Iniciados](Capturas/01.png)
 
-### 2. Formulario de Registro de Usuario
-Selección de la Opción 1 en el cliente de consola e ingreso de credenciales para dar de alta un nuevo usuario (`Berger`, `1234`).
-![02 - Formulario de Registro](Capturas/02.jpg)
+### 2. Inicio de Sesión (`POST /login` 200 OK)
+Ingreso de credenciales (`Rodrigo`, `1234`), validación exitosa contra el hash en SQLite, respuesta HTTP 200 y actualización del menú del cliente a sesión activa `[Rodrigo]`.
+![02 - Login Exitoso](Capturas/02.png)
 
-### 3. Registro Exitoso (`POST /registro` 201 Created)
-Confirmación del alta en el cliente y verificación en el log del servidor indicando el almacenamiento seguro mediante hash criptográfico con salt en SQLite.
-![03 - Registro Exitoso con Hash](Capturas/03.jpg)
+### 3. Listado Protegido de Usuarios (`GET /usuarios` 200 OK)
+Petición al endpoint protegido `GET /usuarios` con sesión iniciada, mostrando en consola la tabla de usuarios registrados (`Rodrigo`, `Berger`, `usuario`) sin exponer datos sensibles.
+![03 - Listado Protegido de Usuarios](Capturas/03.png)
 
-### 4. Inicio de Sesión (`POST /login` 200 OK)
-Verificación de credenciales contra el hash en base de datos SQLite y actualización del estado de sesión activa a `[Berger]`.
-![04 - Login Exitoso](Capturas/04.jpg)
-
-### 5. Listado Protegido de Usuarios (`GET /usuarios` 200 OK)
-Petición al endpoint protegido `GET /usuarios` enviando las credenciales de sesión activa, visualizando la lista de usuarios registrados sin exponer datos sensibles.
-![05 - Listado de Usuarios](Capturas/05.jpg)
+### 4. Registro de Nuevo Usuario (`POST /registro` 201 Created)
+Alta de un nuevo usuario (`Ambar`, `1234`), con respuesta HTTP 201 Created y confirmación del almacenamiento seguro con hash criptográfico en SQLite registrado en la consola del servidor.
+![04 - Registro de Nuevo Usuario](Capturas/04.png)
 
 ---
 
