@@ -19,7 +19,7 @@ El sistema implementa de forma limpia y directa los 3 requerimientos fundamental
 ### Componentes:
 - **`servidor.py`**: Servidor API REST en Flask que gestiona los endpoints de registro, login y listado de usuarios con base de datos SQLite.
 - **`cliente.py`**: Cliente de consola con menú interactivo para consumir la API fácilmente.
-- **`index.html`**: Cliente web interactivo con formularios de registro, login, tabla dinámica de usuarios y consola de peticiones HTTP en tiempo real.
+- **`index.html`**: Página web de presentación y documentación del proyecto para **GitHub Pages** (el README en versión web estilizada).
 - **`usuarios.db`**: Base de datos relacional SQLite con la tabla `usuarios`.
 
 ---
@@ -144,12 +144,9 @@ Sigue el menú interactivo para:
 2. Iniciar sesión.
 3. Listar usuarios (comprobando el acceso protegido).
 
-#### Opción B: Cliente Web
-Abrir en el navegador web el archivo `index.html` o ingresar directamente a:
-```
-http://localhost:5000
-```
-Permite probar interactivamente el registro, login y visualización de la lista de usuarios con log HTTP en vivo.
+### 🌐 Presentación Web en GitHub Pages
+Para visualizar la documentación completa, especificación de la API, respuestas teóricas y galería de capturas de pruebas en formato web, abrir [index.html](index.html) en el navegador o acceder al sitio oficial:
+[https://rdbergeruser-stack.github.io/PFO2-Redes-RodrigoBerger/](https://rdbergeruser-stack.github.io/PFO2-Redes-RodrigoBerger/)
 
 ### 👤 Usuarios y Credenciales de Prueba Iniciales
 

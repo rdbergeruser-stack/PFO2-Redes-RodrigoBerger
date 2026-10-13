@@ -3,650 +3,973 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PFO 2 - Sistema de Usuarios | IFTS N.° 29 - Programación sobre Redes</title>
+    <title>PFO 2 - Sistema de Usuarios | IFTS N.° 29 - Rodrigo Berger</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent: #38bdf8;
-            --accent-hover: #0284c7;
-            --success: #10b981;
+            --bg-dark: #090d16;
+            --bg-card: #111827;
+            --bg-card-hover: #172238;
+            --border: #1f293d;
+            --border-highlight: #334155;
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.15);
+            --secondary: #10b981;
+            --accent: #818cf8;
             --warning: #f59e0b;
-            --danger: #ef4444;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border: #334155;
-            --input-bg: #0f172a;
+            --code-bg: #030712;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            scroll-behavior: smooth;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg-color);
+            background-color: var(--bg-dark);
             color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding: 24px;
+            line-height: 1.65;
+            padding-bottom: 60px;
         }
 
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* HEADER & NAVBAR */
         header {
-            max-width: 1000px;
-            margin: 0 auto 30px auto;
-            width: 100%;
+            border-bottom: 1px solid var(--border);
+            background: rgba(9, 13, 22, 0.85);
+            backdrop-filter: blur(14px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border);
+            height: 70px;
         }
 
-        .title-group h1 {
-            font-size: 1.5rem;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             font-weight: 700;
-            color: var(--text-main);
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.05rem;
         }
 
-        .title-group p {
-            font-size: 0.9rem;
+        .brand-badge {
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            color: #04101e;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        nav a {
             color: var(--text-muted);
-            margin-top: 4px;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: color 0.2s;
         }
 
-        .badge-session {
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        .nav-btn {
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--primary) !important;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: #04101e !important;
+        }
+
+        @media (max-width: 820px) {
+            nav a:not(.nav-btn) { display: none; }
+        }
+
+        /* HERO SECTION */
+        .hero {
+            padding: 70px 0 45px;
+            text-align: center;
+        }
+
+        .hero-tag {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 16px;
-            border-radius: 9999px;
             background: rgba(56, 189, 248, 0.1);
             border: 1px solid rgba(56, 189, 248, 0.3);
-            font-size: 0.88rem;
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        .badge-session.active {
-            background: rgba(16, 185, 129, 0.15);
-            border-color: rgba(16, 185, 129, 0.4);
-            color: var(--success);
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: currentColor;
-        }
-
-        main {
-            max-width: 1000px;
-            margin: 0 auto;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            flex-grow: 1;
-        }
-
-        @media (max-width: 768px) {
-            main {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .card.full-width {
-            grid-column: 1 / -1;
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .card-title {
-            font-size: 1.15rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-badge {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-muted);
-        }
-
-        .badge-post {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--success);
-        }
-
-        .badge-get {
-            background: rgba(56, 189, 248, 0.2);
-            color: var(--accent);
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        label {
+            color: var(--primary);
             font-size: 0.85rem;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+            line-height: 1.25;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
             color: var(--text-muted);
+            font-size: 1.12rem;
+            max-width: 760px;
+            margin: 0 auto 32px;
+            line-height: 1.6;
         }
 
-        input {
-            width: 100%;
-            padding: 10px 14px;
-            background: var(--input-bg);
+        .meta-badges {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 35px;
+        }
+
+        .meta-item {
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            outline: none;
-            transition: border-color 0.2s;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        input:focus {
-            border-color: var(--accent);
+        .meta-item strong {
+            color: #fff;
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
-            padding: 11px 18px;
-            border-radius: 8px;
-            font-size: 0.92rem;
+            padding: 12px 24px;
+            border-radius: 9px;
+            font-size: 0.95rem;
             font-weight: 600;
-            border: none;
+            text-decoration: none;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .btn-primary {
-            background: var(--accent);
-            color: #0f172a;
+            background: var(--primary);
+            color: #04101e;
         }
 
         .btn-primary:hover {
-            background: var(--accent-hover);
-            color: #ffffff;
+            background: #7dd3fc;
+            transform: translateY(-2px);
         }
 
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: var(--danger);
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-highlight);
+            color: #fff;
         }
 
-        .btn-danger:hover {
-            background: var(--danger);
-            color: white;
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
         }
 
-        .btn-secondary {
-            background: #334155;
-            color: var(--text-main);
+        /* SECTION STYLING */
+        section {
+            margin-top: 65px;
         }
 
-        .btn-secondary:hover {
-            background: #475569;
-        }
-
-        .btn-group {
+        .section-header {
+            margin-bottom: 28px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 14px;
             display: flex;
-            gap: 10px;
+            align-items: baseline;
+            gap: 12px;
         }
 
-        .alert {
-            padding: 12px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            display: none;
-            line-height: 1.4;
+        .section-header h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #fff;
         }
 
-        .alert-success {
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: var(--success);
+        .section-header span {
+            color: var(--primary);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.88rem;
+            font-weight: 600;
         }
 
-        .alert-error {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: var(--danger);
+        /* GRIDS & CARDS */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
 
-        .alert-info {
-            background: rgba(56, 189, 248, 0.15);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            color: var(--accent);
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+            gap: 24px;
         }
 
-        /* Tabla de Usuarios */
+        @media (max-width: 520px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .card:hover {
+            border-color: var(--border-highlight);
+        }
+
+        .card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.93rem;
+            line-height: 1.6;
+        }
+
+        /* TABLE */
         .table-responsive {
             overflow-x: auto;
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 10px;
+            background: var(--bg-card);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 0.92rem;
             text-align: left;
-            font-size: 0.9rem;
         }
 
         th {
-            background: rgba(15, 23, 42, 0.6);
-            padding: 12px 16px;
-            color: var(--text-muted);
+            background: #0d1322;
+            color: #cbd5e1;
+            padding: 14px 18px;
             font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             border-bottom: 1px solid var(--border);
         }
 
         td {
-            padding: 12px 16px;
-            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
-            color: var(--text-main);
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(31, 41, 61, 0.7);
+            color: var(--text-muted);
         }
 
         tr:last-child td {
             border-bottom: none;
         }
 
-        /* Consola de logs */
-        .console-card {
-            background: #020617;
-            border: 1px solid #1e293b;
-            border-radius: 12px;
-            padding: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.82rem;
-            margin-top: 24px;
-            grid-column: 1 / -1;
+        td strong {
+            color: #fff;
         }
 
-        .console-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .code-inline {
+            font-family: 'Fira Code', monospace;
+            background: rgba(56, 189, 248, 0.08);
+            color: var(--primary);
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-size: 0.84rem;
+        }
+
+        /* METHOD BADGES */
+        .method {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .method-post {
+            background: rgba(16, 185, 129, 0.18);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #34d399;
+        }
+
+        .method-get {
+            background: rgba(56, 189, 248, 0.18);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+        }
+
+        .badge-locked {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: var(--warning);
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        /* CODE BLOCK */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.86rem;
+            color: #e2e8f0;
+            overflow-x: auto;
+            margin: 12px 0 20px;
+            line-height: 1.6;
+        }
+
+        .comment { color: #64748b; }
+        .keyword { color: #f43f5e; }
+        .string { color: #34d399; }
+        .number { color: #fbbf24; }
+
+        /* THEORY BOXES */
+        .theory-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 22px;
+        }
+
+        .theory-box h3 {
+            font-size: 1.25rem;
             margin-bottom: 12px;
-            color: var(--text-muted);
-            border-bottom: 1px solid #1e293b;
-            padding-bottom: 8px;
+            color: #fff;
         }
 
-        .console-logs {
-            max-height: 160px;
-            overflow-y: auto;
+        .theory-box p {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            margin-bottom: 14px;
+        }
+
+        .theory-box ul {
+            margin-left: 20px;
+            color: var(--text-muted);
+            font-size: 0.92rem;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
 
-        .log-entry {
+        .theory-box li strong {
+            color: #e2e8f0;
+        }
+
+        /* GALLERY */
+        .captures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 24px;
+        }
+
+        @media (max-width: 560px) {
+            .captures-grid { grid-template-columns: 1fr; }
+        }
+
+        .capture-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .capture-card:hover {
+            border-color: var(--border-highlight);
+            transform: translateY(-3px);
+        }
+
+        .capture-img-wrap {
+            position: relative;
+            background: #020617;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .capture-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            cursor: zoom-in;
+            transition: opacity 0.2s;
+        }
+
+        .capture-card img:hover {
+            opacity: 0.95;
+        }
+
+        .capture-info {
+            padding: 18px 20px;
+        }
+
+        .capture-info h4 {
+            font-size: 1.05rem;
+            color: #fff;
+            margin-bottom: 6px;
             display: flex;
-            gap: 12px;
+            align-items: center;
+            gap: 8px;
         }
 
-        .log-time { color: #64748b; }
-        .log-status-200, .log-status-201 { color: #34d399; }
-        .log-status-400, .log-status-401, .log-status-409 { color: #f87171; }
-        .log-msg { color: #e2e8f0; }
-
-        footer {
-            max-width: 1000px;
-            margin: 30px auto 0 auto;
-            text-align: center;
-            font-size: 0.85rem;
+        .capture-info p {
             color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.5;
         }
+
+        /* LIGHTBOX MODAL */
+        #lightbox {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 7, 18, 0.92);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #lightbox img {
+            max-width: 95%;
+            max-height: 90vh;
+            border-radius: 10px;
+            border: 1px solid var(--border-highlight);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        /* FOOTER */
+        footer {
+            margin-top: 80px;
+            border-top: 1px solid var(--border);
+            padding-top: 35px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+
+        footer p { margin-bottom: 6px; }
+        footer a { color: var(--primary); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
+    <!-- NAVBAR -->
     <header>
-        <div class="title-group">
-            <h1>Sistema de Gestión de Usuarios</h1>
-            <p>PFO 2 - Programación sobre Redes (3.° D) | <strong>IFTS N.° 29</strong> | Alumno: Rodrigo Berger</p>
-        </div>
-        <div id="sessionBadge" class="badge-session">
-            <span class="status-dot"></span>
-            <span id="sessionText">Sesión no iniciada</span>
+        <div class="container nav-content">
+            <a href="#" class="brand">
+                <span class="brand-badge">PFO 2</span>
+                <span>IFTS N.° 29 — Redes</span>
+            </a>
+            <nav>
+                <a href="#arquitectura">Arquitectura</a>
+                <a href="#db">Base de Datos</a>
+                <a href="#endpoints">Endpoints</a>
+                <a href="#teoria">Respuestas Teóricas</a>
+                <a href="#ejecucion">Ejecución</a>
+                <a href="#capturas">Capturas de Pruebas</a>
+                <a href="https://github.com/rdbergeruser-stack/PFO2-Redes-RodrigoBerger" target="_blank" class="nav-btn">GitHub Repo ↗</a>
+            </nav>
         </div>
     </header>
 
-    <main>
-        <!-- TARJETA 1: REGISTRO -->
-        <section class="card">
-            <div class="card-header">
-                <h2 class="card-title">1. Registrar Usuario</h2>
-                <span class="card-badge badge-post">POST /registro</span>
+    <main class="container">
+
+        <!-- HERO SECTION -->
+        <section class="hero">
+            <div class="hero-tag">
+                <span>📚</span> Programación sobre Redes (3.° D) — IFTS N.° 29
             </div>
-            <p style="font-size:0.85rem; color:var(--text-muted);">
-                Almacena el usuario con contraseña hasheada en SQLite (nunca en texto plano).
+            <h1>Sistema de Gestión de Usuarios</h1>
+            <p>
+                API REST desarrollada con <strong>Flask</strong>, persistencia relacional en <strong>SQLite3</strong> y contraseñas protegidas con <strong>hashing criptográfico unidireccional y salt</strong>. Incluye cliente de consola interactivo y control de acceso por sesión.
             </p>
-            <form id="formRegistro" onsubmit="handleRegistro(event)">
-                <div class="form-group">
-                    <label for="regUsuario">Nombre de usuario</label>
-                    <input type="text" id="regUsuario" placeholder="Ej: nuevo_usuario" required>
-                </div>
-                <div class="form-group" style="margin-top:12px;">
-                    <label for="regContrasena">Contraseña</label>
-                    <input type="password" id="regContrasena" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="margin-top:16px; width: 100%;">
-                    Crear Usuario
-                </button>
-            </form>
-            <div id="alertRegistro" class="alert"></div>
+            <div class="meta-badges">
+                <div class="meta-item">🏛️ <strong>Institución:</strong> IFTS N.° 29</div>
+                <div class="meta-item">👤 <strong>Alumno:</strong> Rodrigo Berger</div>
+                <div class="meta-item">🛠️ <strong>Backend:</strong> Python 3 / Flask</div>
+                <div class="meta-item">🗄️ <strong>Persistencia:</strong> SQLite (usuarios.db)</div>
+                <div class="meta-item">🔒 <strong>Criptografía:</strong> Werkzeug (PBKDF2/scrypt)</div>
+            </div>
+            <div class="hero-actions">
+                <a href="https://github.com/rdbergeruser-stack/PFO2-Redes-RodrigoBerger" target="_blank" class="btn btn-primary">
+                    Ver Repositorio en GitHub ↗
+                </a>
+                <a href="#capturas" class="btn btn-outline">
+                    Ver Capturas de Pruebas ↓
+                </a>
+            </div>
         </section>
 
-        <!-- TARJETA 2: LOGIN -->
-        <section class="card">
-            <div class="card-header">
-                <h2 class="card-title">2. Iniciar Sesión</h2>
-                <span class="card-badge badge-post">POST /login</span>
+        <!-- 1. ARQUITECTURA -->
+        <section id="arquitectura">
+            <div class="section-header">
+                <h2>1. Descripción del Proyecto y Arquitectura</h2>
+                <span>// CLIENTE-SERVIDOR</span>
             </div>
-            <p style="font-size:0.85rem; color:var(--text-muted);">
-                Verifica credenciales contra el hash en base de datos para habilitar acceso.
-            </p>
-            <form id="formLogin" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="loginUsuario">Nombre de usuario</label>
-                    <input type="text" id="loginUsuario" placeholder="Ej: Rodrigo" required>
+            <div class="grid-3">
+                <div class="card">
+                    <h3><span>🔑</span> 1. Registro Seguro</h3>
+                    <p>
+                        Da de alta nuevos usuarios recibiendo credenciales vía JSON. Almacena contraseñas transformadas mediante <strong>hash criptográfico con salt aleatorio</strong>, garantizando que nunca se persistan en texto plano.
+                    </p>
                 </div>
-                <div class="form-group" style="margin-top:12px;">
-                    <label for="loginContrasena">Contraseña</label>
-                    <input type="password" id="loginContrasena" placeholder="••••••••" required>
+                <div class="card">
+                    <h3><span>🚪</span> 2. Inicio de Sesión</h3>
+                    <p>
+                        Endpoint de autenticación que contrasta las credenciales recibidas con el hash almacenado en SQLite mediante funciones seguras de verificación, habilitando la sesión del cliente sin comprometer la clave.
+                    </p>
                 </div>
-                <div class="btn-group" style="margin-top:16px;">
-                    <button type="submit" class="btn btn-primary" style="flex:1;">
-                        Iniciar Sesión
-                    </button>
-                    <button type="button" class="btn btn-danger" onclick="handleLogout()">
-                        Salir
-                    </button>
+                <div class="card">
+                    <h3><span>🔒</span> 3. Listado Protegido</h3>
+                    <p>
+                        Consulta de todos los usuarios registrados. Está <strong>restringido a usuarios con sesión activa</strong>: si no se proveen credenciales válidas, retorna <code>HTTP 401 Unauthorized</code>. No expone hashes por seguridad.
+                    </p>
                 </div>
-            </form>
-            <div id="alertLogin" class="alert"></div>
+            </div>
+
+            <div class="card" style="margin-top: 20px;">
+                <h3 style="margin-bottom: 12px;">📁 Componentes del Repositorio</h3>
+                <ul style="margin-left: 20px; color: var(--text-muted); font-size: 0.93rem; display: flex; flex-direction: column; gap: 8px;">
+                    <li><code class="code-inline">servidor.py</code>: Servidor API REST en Flask con endpoints <code>/registro</code>, <code>/login</code> y <code>/usuarios</code>, con conexión SQLite y CORS habilitado.</li>
+                    <li><code class="code-inline">cliente.py</code>: Cliente de consola en Python con menú interactivo (1 a 5) y manejo de sesiones para consumir la API.</li>
+                    <li><code class="code-inline">usuarios.db</code>: Archivo de base de datos relacional SQLite que almacena la tabla <code>usuarios</code>.</li>
+                    <li><code class="code-inline">index.html</code>: Esta página estática alojada en <strong>GitHub Pages</strong> con la presentación oficial y documentación del proyecto.</li>
+                    <li><code class="code-inline">README.md</code>: Documentación completa en formato Markdown con respuestas conceptuales y guías técnicas.</li>
+                </ul>
+            </div>
         </section>
 
-        <!-- TARJETA 3: LISTADO DE USUARIOS (PROTEGIDO) -->
-        <section class="card full-width">
-            <div class="card-header">
-                <div class="card-title">
-                    <span>3. Listado de Usuarios Registrados</span>
-                </div>
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <span class="card-badge badge-get">GET /usuarios</span>
-                    <button class="btn btn-secondary" onclick="cargarUsuarios()">
-                        ↻ Actualizar Listado
-                    </button>
-                </div>
+        <!-- 2. BASE DE DATOS -->
+        <section id="db">
+            <div class="section-header">
+                <h2>2. Estructura de la Base de Datos</h2>
+                <span>// SQLITE (usuarios.db)</span>
             </div>
-
-            <div id="alertUsuarios" class="alert"></div>
-
+            <p style="color: var(--text-muted); margin-bottom: 18px; font-size: 0.95rem;">
+                La persistencia se realiza íntegramente en un archivo autocontenido relacional denominado <code>usuarios.db</code> mediante la tabla <code>usuarios</code>:
+            </p>
             <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 80px;"># ID</th>
-                            <th>Usuario</th>
-                            <th>Fecha de Registro</th>
+                            <th>Campo</th>
+                            <th>Tipo de Dato</th>
+                            <th>Restricciones</th>
+                            <th>Descripción</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaUsuariosBody">
+                    <tbody>
                         <tr>
-                            <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 24px;">
-                                Inicie sesión y haga clic en "Actualizar Listado" para consultar los usuarios registrados.
-                            </td>
+                            <td><code class="code-inline">id</code></td>
+                            <td><code>INTEGER</code></td>
+                            <td><code>PRIMARY KEY AUTOINCREMENT</code></td>
+                            <td>Identificador numérico único y autoincremental de cada usuario.</td>
+                        </tr>
+                        <tr>
+                            <td><code class="code-inline">usuario</code></td>
+                            <td><code>TEXT</code></td>
+                            <td><code>UNIQUE NOT NULL</code></td>
+                            <td>Nombre de usuario elegido para autenticarse (sin duplicados).</td>
+                        </tr>
+                        <tr>
+                            <td><code class="code-inline">contrasena_hash</code></td>
+                            <td><code>TEXT</code></td>
+                            <td><code>NOT NULL</code></td>
+                            <td>Cadena de hash seguro con salt generada por Werkzeug (PBKDF2/scrypt).</td>
+                        </tr>
+                        <tr>
+                            <td><code class="code-inline">fecha_registro</code></td>
+                            <td><code>TEXT</code></td>
+                            <td><code>NOT NULL</code></td>
+                            <td>Fecha y hora del sistema en la que se dio el alta (YYYY-MM-DD HH:MM:SS).</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+
+            <pre><span class="comment">-- Definición de la tabla en SQLite (servidor.py)</span>
+<span class="keyword">CREATE TABLE IF NOT EXISTS</span> usuarios (
+    id <span class="keyword">INTEGER PRIMARY KEY AUTOINCREMENT</span>,
+    usuario <span class="keyword">TEXT UNIQUE NOT NULL</span>,
+    contrasena_hash <span class="keyword">TEXT NOT NULL</span>,
+    fecha_registro <span class="keyword">TEXT NOT NULL</span>
+);</pre>
         </section>
 
-        <!-- CONSOLA DE AUDITORÍA HTTP -->
-        <div class="console-card">
-            <div class="console-header">
-                <span>CONSOLA DE PETICIONES HTTP (REST API)</span>
-                <span id="apiUrlDisplay">API: http://localhost:5000</span>
+        <!-- 3. ENDPOINTS -->
+        <section id="endpoints">
+            <div class="section-header">
+                <h2>3. Especificación de Endpoints REST</h2>
+                <span>// HTTP CONTRACT</span>
             </div>
-            <div class="console-logs" id="consoleLogs">
-                <div class="log-entry">
-                    <span class="log-time">[00:00:00]</span>
-                    <span class="log-msg">Listo para enviar solicitudes a la API.</span>
+            <div class="grid-3">
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <span class="method method-post">POST /registro</span>
+                        <span style="font-size:0.75rem; color:#34d399; font-weight:600;">201 Created</span>
+                    </div>
+                    <h3>Registro de Usuarios</h3>
+                    <p style="margin-bottom:12px;">Da de alta un usuario y guarda su contraseña hasheada en SQLite.</p>
+                    <p><strong>Body JSON:</strong></p>
+                    <pre style="margin: 8px 0;">{
+  <span class="string">"usuario"</span>: <span class="string">"Berger"</span>,
+  <span class="string">"contraseña"</span>: <span class="string">"1234"</span>
+}</pre>
+                    <p style="font-size:0.85rem; color:var(--text-muted);">
+                        • <code>201 Created</code>: Alta exitosa.<br>
+                        • <code>400 Bad Request</code>: Datos incompletos.<br>
+                        • <code>409 Conflict</code>: Usuario ya existente.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <span class="method method-post">POST /login</span>
+                        <span style="font-size:0.75rem; color:#34d399; font-weight:600;">200 OK</span>
+                    </div>
+                    <h3>Inicio de Sesión</h3>
+                    <p style="margin-bottom:12px;">Valida credenciales comparando contra el hash almacenado.</p>
+                    <p><strong>Body JSON:</strong></p>
+                    <pre style="margin: 8px 0;">{
+  <span class="string">"usuario"</span>: <span class="string">"Berger"</span>,
+  <span class="string">"contraseña"</span>: <span class="string">"1234"</span>
+}</pre>
+                    <p style="font-size:0.85rem; color:var(--text-muted);">
+                        • <code>200 OK</code>: Sesión iniciada con éxito.<br>
+                        • <code>401 Unauthorized</code>: Usuario o clave incorrectos.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <span class="method method-get">GET /usuarios</span>
+                        <span class="badge-locked">🔒 Protegido</span>
+                    </div>
+                    <h3>Listado de Usuarios</h3>
+                    <p style="margin-bottom:12px;">Retorna todos los usuarios registrados. Requiere autenticación activa.</p>
+                    <p><strong>Headers requeridos:</strong></p>
+                    <pre style="margin: 8px 0;">X-Usuario: Berger
+X-Contrasena: 1234</pre>
+                    <p style="font-size:0.85rem; color:var(--text-muted);">
+                        • <code>200 OK</code>: Lista en JSON (id, usuario, fecha).<br>
+                        • <code>401 Unauthorized</code>: Si no inició sesión.
+                    </p>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- 4. RESPUESTAS TEÓRICAS -->
+        <section id="teoria">
+            <div class="section-header">
+                <h2>4. Respuestas a Preguntas Conceptuales</h2>
+                <span>// EVALUACIÓN TEÓRICA</span>
+            </div>
+
+            <!-- TEORÍA 1 -->
+            <div class="theory-box">
+                <h3>1. ¿Por qué es fundamental hashear contraseñas en lugar de guardarlas en texto plano?</h3>
+                <p>
+                    Guardar contraseñas en texto plano representa la vulnerabilidad más crítica en seguridad web. Las razones técnicas clave para utilizar funciones hash son:
+                </p>
+                <ul>
+                    <li>
+                        <strong>Protección ante filtraciones de bases de datos (Data Breaches):</strong> Si un atacante extrae la base de datos o se filtra una copia de respaldo, solo obtendrá cadenas alfanuméricas ininteligibles, impidiendo que acceda a las claves reales de los usuarios o las reutilice en otros servicios.
+                    </li>
+                    <li>
+                        <strong>Propiedad Unidireccional (One-Way):</strong> A diferencia del cifrado simétrico o asimétrico (reversible mediante claves de desencriptación), una función hash criptográfica es <em>matemáticamente irreversible</em>. Es inmediato calcular <code>Hash = H(contraseña)</code>, pero resulta computacionalmente inviable deducir la contraseña original a partir del hash (<code>H⁻¹(Hash)</code>). Para autenticar, el servidor calcula el hash de lo ingresado en el login y lo compara contra el hash guardado, sin necesidad de conocer la clave en texto plano.
+                    </li>
+                    <li>
+                        <strong>Defensa contra Tablas de Arcoíris (Rainbow Tables) mediante Salting:</strong> Algoritmos como PBKDF2 y scrypt (utilizados por <code>werkzeug.security</code>) generan automáticamente un <em>Salt</em> (secuencia aleatoria única por usuario) antes de calcular el hash. Esto garantiza que dos usuarios con la misma clave (ej: <code>"1234"</code>) tengan hashes completamente distintos en la base de datos, inutilizando los diccionarios de hashes precalculados.
+                    </li>
+                    <li>
+                        <strong>Resistencia a Ataques de Fuerza Bruta:</strong> Las funciones hash para contraseñas aplican costos iterativos de CPU y memoria deliberadamente para retardar los intentos masivos de adivinación automatizada.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- TEORÍA 2 -->
+            <div class="theory-box" style="border-left-color: var(--secondary);">
+                <h3>2. ¿Cuáles son las ventajas de utilizar SQLite en este proyecto?</h3>
+                <p>
+                    Para los requerimientos y alcance de este proyecto, SQLite aporta ventajas arquitectónicas determinantes frente a motores cliente-servidor como MySQL o PostgreSQL:
+                </p>
+                <ul>
+                    <li>
+                        <strong>Arquitectura sin Servidor (Serverless):</strong> SQLite no corre como un proceso demonio o servicio en segundo plano ni requiere apertura de puertos de red. La biblioteca interactúa directamente con el archivo en disco, eliminando latencia de red en las consultas.
+                    </li>
+                    <li>
+                        <strong>Cero Configuración (Zero-Configuration):</strong> No requiere credenciales de usuario de base de datos, administración de permisos de red ni cadenas complejas de conexión. Viene integrado de manera nativa en la biblioteca estándar de Python (<code>import sqlite3</code>).
+                    </li>
+                    <li>
+                        <strong>Portabilidad Absoluta en un Único Archivo:</strong> Toda la base de datos (tablas, índices y registros) se almacena en el archivo <code>usuarios.db</code>. Esto permite que el proyecto se pueda clonar y ejecutar en cualquier equipo de inmediato sin instalar software adicional.
+                    </li>
+                    <li>
+                        <strong>Garantía de Integridad ACID:</strong> Cumple estrictamente con las propiedades de Atomicidad, Consistencia, Aislamiento y Durabilidad (ACID), evitando corrupción de datos ante errores o cierres inesperados.
+                    </li>
+                    <li>
+                        <strong>Consumo Mínimo de Recursos:</strong> Tiene una huella de memoria insignificante, lo que lo hace perfecto para arquitecturas ligeras de desarrollo local y pruebas de redes.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 5. GUÍA DE EJECUCIÓN -->
+        <section id="ejecucion">
+            <div class="section-header">
+                <h2>5. Guía de Ejecución Local</h2>
+                <span>// COMANDOS DE CONSOLA</span>
+            </div>
+            <div class="grid-2">
+                <div class="card">
+                    <h3><span>📦</span> 1. Requisitos e Instalación</h3>
+                    <p style="margin-bottom:10px;">Instalar las dependencias necesarias en la consola:</p>
+                    <pre>pip install flask requests werkzeug</pre>
+
+                    <h3 style="margin-top:20px;"><span>🚀</span> 2. Iniciar el Servidor API</h3>
+                    <p style="margin-bottom:10px;">En una primera terminal:</p>
+                    <pre>python servidor.py</pre>
+                    <p style="font-size:0.88rem; color:var(--text-muted);">
+                        El servidor quedará a la escucha en <code>http://localhost:5000</code> inicializando automáticamente <code>usuarios.db</code>.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3><span>💻</span> 3. Iniciar el Cliente de Consola</h3>
+                    <p style="margin-bottom:10px;">En una segunda terminal distinta:</p>
+                    <pre>python cliente.py</pre>
+
+                    <h3 style="margin-top:20px;"><span>👤</span> Credenciales de Prueba Precargadas</h3>
+                    <p style="margin-bottom:10px;">Para probar el login y listado de inmediato sin registrarse:</p>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Contraseña</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong style="color:var(--primary);">Rodrigo</strong></td>
+                                    <td><code>1234</code></td>
+                                    <td><span style="color:var(--secondary); font-size:0.8rem; font-weight:600;">✓ Registrado en DB</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color:var(--primary);">Berger</strong></td>
+                                    <td><code>1234</code></td>
+                                    <td><span style="color:var(--secondary); font-size:0.8rem; font-weight:600;">✓ Registrado en DB</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. CAPTURAS DE PANTALLA -->
+        <section id="capturas">
+            <div class="section-header">
+                <h2>6. Capturas de Pantalla de Pruebas Exitosas</h2>
+                <span>// EVIDENCIA DE FUNCIONAMIENTO REAL</span>
+            </div>
+            <p style="color:var(--text-muted); margin-bottom: 24px; font-size: 0.95rem;">
+                Pruebas reales ejecutadas en Windows PowerShell demostrando el ciclo completo de inicialización, inicio de sesión, consulta protegida y registro de usuarios en la base de datos:
+            </p>
+
+            <div class="captures-grid">
+                <!-- CAPTURA 1 -->
+                <div class="capture-card">
+                    <div class="capture-img-wrap">
+                        <img src="Capturas/01.png" alt="01 - Servidor y Cliente Iniciados" onclick="openLightbox(this.src)">
+                    </div>
+                    <div class="capture-info">
+                        <h4><span>01.</span> Servidor y Cliente Iniciados</h4>
+                        <p>
+                            Puesta en marcha del servidor API Flask en <code>http://localhost:5000</code> con la base de datos <code>usuarios.db</code> inicializada, junto al menú interactivo de <code>cliente.py</code> indicando la institución <strong>IFTS N.° 29</strong>.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- CAPTURA 2 -->
+                <div class="capture-card">
+                    <div class="capture-img-wrap">
+                        <img src="Capturas/02.png" alt="02 - Inicio de Sesión Exitoso" onclick="openLightbox(this.src)">
+                    </div>
+                    <div class="capture-info">
+                        <h4><span>02.</span> Inicio de Sesión (POST /login 200 OK)</h4>
+                        <p>
+                            Ingreso de credenciales (<code>Rodrigo</code>, <code>1234</code>), verificación exitosa contra el hash en SQLite, respuesta HTTP 200 y actualización del menú del cliente a sesión activa <code>[Rodrigo]</code>.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- CAPTURA 3 -->
+                <div class="capture-card">
+                    <div class="capture-img-wrap">
+                        <img src="Capturas/03.png" alt="03 - Listado Protegido de Usuarios" onclick="openLightbox(this.src)">
+                    </div>
+                    <div class="capture-info">
+                        <h4><span>03.</span> Listado Protegido de Usuarios (GET /usuarios 200 OK)</h4>
+                        <p>
+                            Petición al endpoint protegido <code>GET /usuarios</code> con sesión iniciada, mostrando en consola la tabla de usuarios registrados (<code>Rodrigo</code>, <code>Berger</code>, <code>usuario</code>) sin exponer credenciales ni hashes.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- CAPTURA 4 -->
+                <div class="capture-card">
+                    <div class="capture-img-wrap">
+                        <img src="Capturas/04.png" alt="04 - Registro de Nuevo Usuario" onclick="openLightbox(this.src)">
+                    </div>
+                    <div class="capture-info">
+                        <h4><span>04.</span> Registro de Nuevo Usuario (POST /registro 201 Created)</h4>
+                        <p>
+                            Alta de un nuevo usuario (<code>Ambar</code>, <code>1234</code>), con respuesta HTTP 201 Created y confirmación del almacenamiento seguro con hash criptográfico en SQLite registrado en la consola del servidor.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. ENLACES -->
+        <section id="enlaces">
+            <div class="section-header">
+                <h2>7. Enlaces del Proyecto</h2>
+                <span>// GITHUB & DEPLOYMENT</span>
+            </div>
+            <div class="grid-2">
+                <div class="card" style="text-align: center; padding: 32px 24px;">
+                    <h3 style="justify-content: center; margin-bottom: 12px;">📁 Repositorio de Código</h3>
+                    <p style="margin-bottom: 20px;">Código fuente completo con historial de commits y control de versiones:</p>
+                    <a href="https://github.com/rdbergeruser-stack/PFO2-Redes-RodrigoBerger" target="_blank" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                        github.com/rdbergeruser-stack/PFO2-Redes-RodrigoBerger ↗
+                    </a>
+                </div>
+
+                <div class="card" style="text-align: center; padding: 32px 24px;">
+                    <h3 style="justify-content: center; margin-bottom: 12px;">🌐 Sitio en GitHub Pages</h3>
+                    <p style="margin-bottom: 20px;">Publicación estática oficial para la entrega y consulta pública:</p>
+                    <a href="https://rdbergeruser-stack.github.io/PFO2-Redes-RodrigoBerger/" target="_blank" class="btn btn-outline" style="width: 100%; justify-content: center;">
+                        rdbergeruser-stack.github.io/PFO2-Redes-RodrigoBerger ↗
+                    </a>
+                </div>
+            </div>
+        </section>
+
     </main>
 
+    <!-- LIGHTBOX MODAL -->
+    <div id="lightbox" onclick="closeLightbox()">
+        <img id="lightboxImg" src="" alt="Captura ampliada">
+    </div>
+
+    <!-- FOOTER -->
     <footer>
-        <p>Programación sobre Redes (3.° D) | <strong>IFTS N.° 29</strong> | Alumno: Rodrigo Berger</p>
+        <div class="container">
+            <p><strong>PFO 2 — Programación sobre Redes (3.° D)</strong> | <strong>IFTS N.° 29</strong></p>
+            <p>Alumno: <strong>Rodrigo Berger</strong> | Tecnologías: Flask, SQLite3, Requests, HTML5/CSS3</p>
+            <p style="margin-top: 10px; font-size: 0.8rem; color: #64748b;">
+                Alojado en <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
+            </p>
+        </div>
     </footer>
 
     <script>
-        const API_URL = "http://localhost:5000";
-
-        // Estado de la sesión actual en memoria
-        let sesion = {
-            usuario: null,
-            contrasena: null
-        };
-
-        function logHttp(metodo, endpoint, status, mensaje) {
-            const now = new Date().toLocaleTimeString();
-            const consoleBox = document.getElementById("consoleLogs");
-            const entry = document.createElement("div");
-            entry.className = "log-entry";
-            entry.innerHTML = `
-                <span class="log-time">[${now}]</span>
-                <strong style="color:var(--accent);">${metodo} ${endpoint}</strong>
-                <span class="log-status-${status}">[${status}]</span>
-                <span class="log-msg">${mensaje}</span>
-            `;
-            consoleBox.prepend(entry);
+        function openLightbox(src) {
+            const lb = document.getElementById('lightbox');
+            const img = document.getElementById('lightboxImg');
+            img.src = src;
+            lb.style.display = 'flex';
         }
 
-        function showAlert(elemId, tipo, texto) {
-            const el = document.getElementById(elemId);
-            el.className = `alert alert-${tipo}`;
-            el.innerText = texto;
-            el.style.display = "block";
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
         }
 
-        function hideAlert(elemId) {
-            const el = document.getElementById(elemId);
-            el.style.display = "none";
-        }
-
-        function actualizarBadgeSesion() {
-            const badge = document.getElementById("sessionBadge");
-            const text = document.getElementById("sessionText");
-            if (sesion.usuario) {
-                badge.classList.add("active");
-                text.innerText = `Conectado como: ${sesion.usuario}`;
-            } else {
-                badge.classList.remove("active");
-                text.innerText = `Sesión no iniciada`;
-            }
-        }
-
-        // 1. REGISTRO
-        async function handleRegistro(e) {
-            e.preventDefault();
-            hideAlert("alertRegistro");
-            const usuario = document.getElementById("regUsuario").value.trim();
-            const contrasena = document.getElementById("regContrasena").value.trim();
-
-            try {
-                const res = await fetch(`${API_URL}/registro`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ usuario, "contraseña": contrasena })
-                });
-                const data = await res.json();
-                logHttp("POST", "/registro", res.status, data.mensaje || "Respuesta recibida");
-
-                if (res.status === 201) {
-                    showAlert("alertRegistro", "success", `✓ ${data.mensaje}`);
-                    document.getElementById("formRegistro").reset();
-                } else {
-                    showAlert("alertRegistro", "error", `✗ ${data.mensaje || 'Error al registrar'}`);
-                }
-            } catch (err) {
-                showAlert("alertRegistro", "error", `✗ No se pudo conectar con el servidor en ${API_URL}`);
-                logHttp("POST", "/registro", "ERR", err.message);
-            }
-        }
-
-        // 2. LOGIN
-        async function handleLogin(e) {
-            e.preventDefault();
-            hideAlert("alertLogin");
-            const usuario = document.getElementById("loginUsuario").value.trim();
-            const contrasena = document.getElementById("loginContrasena").value.trim();
-
-            try {
-                const res = await fetch(`${API_URL}/login`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ usuario, "contraseña": contrasena })
-                });
-                const data = await res.json();
-                logHttp("POST", "/login", res.status, data.mensaje || "Respuesta recibida");
-
-                if (res.status === 200) {
-                    sesion.usuario = usuario;
-                    sesion.contrasena = contrasena;
-                    actualizarBadgeSesion();
-                    showAlert("alertLogin", "success", `✓ ${data.mensaje}`);
-                    // Cargar listado automáticamente al loguearse
-                    cargarUsuarios();
-                } else {
-                    showAlert("alertLogin", "error", `✗ ${data.mensaje || 'Credenciales inválidas'}`);
-                }
-            } catch (err) {
-                showAlert("alertLogin", "error", `✗ No se pudo conectar con el servidor en ${API_URL}`);
-                logHttp("POST", "/login", "ERR", err.message);
-            }
-        }
-
-        // CERRAR SESIÓN
-        function handleLogout() {
-            if (!sesion.usuario) {
-                showAlert("alertLogin", "info", "No hay ninguna sesión activa.");
-                return;
-            }
-            const exUsuario = sesion.usuario;
-            sesion.usuario = null;
-            sesion.contrasena = null;
-            actualizarBadgeSesion();
-            showAlert("alertLogin", "info", `Sesión de '${exUsuario}' cerrada.`);
-            document.getElementById("formLogin").reset();
-            
-            // Vaciar tabla
-            document.getElementById("tablaUsuariosBody").innerHTML = `
-                <tr>
-                    <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 24px;">
-                        Sesión cerrada. Inicie sesión para ver la lista de usuarios.
-                    </td>
-                </tr>
-            `;
-            hideAlert("alertUsuarios");
-        }
-
-        // 3. LISTAR USUARIOS (GET /usuarios)
-        async function cargarUsuarios() {
-            hideAlert("alertUsuarios");
-            const tbody = document.getElementById("tablaUsuariosBody");
-
-            if (!sesion.usuario) {
-                showAlert("alertUsuarios", "error", "Acceso denegado: El endpoint GET /usuarios requiere tener sesión iniciada.");
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="3" style="text-align: center; color: var(--danger); padding: 24px;">
-                            🔒 Endpoint protegido (HTTP 401 Unauthorized). Debe iniciar sesión primero.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            try {
-                const res = await fetch(`${API_URL}/usuarios`, {
-                    method: "GET",
-                    headers: {
-                        "X-Usuario": sesion.usuario,
-                        "X-Contrasena": sesion.contrasena
-                    }
-                });
-                const data = await res.json();
-                logHttp("GET", "/usuarios", res.status, `Retornó ${data.total_usuarios || 0} usuarios`);
-
-                if (res.status === 200) {
-                    const lista = data.usuarios || [];
-                    if (lista.length === 0) {
-                        tbody.innerHTML = `
-                            <tr>
-                                <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 24px;">
-                                    No hay usuarios registrados en la base de datos.
-                                </td>
-                            </tr>
-                        `;
-                    } else {
-                        tbody.innerHTML = lista.map(u => `
-                            <tr>
-                                <td><strong>#${u.id}</strong></td>
-                                <td><span style="color:var(--accent); font-weight:600;">${u.usuario}</span></td>
-                                <td>${u.fecha_registro}</td>
-                            </tr>
-                        `).join("");
-                        showAlert("alertUsuarios", "success", `✓ Listado cargado con éxito. Total: ${data.total_usuarios} usuarios.`);
-                    }
-                } else {
-                    showAlert("alertUsuarios", "error", `✗ ${data.mensaje || 'Error al obtener usuarios'}`);
-                }
-            } catch (err) {
-                showAlert("alertUsuarios", "error", `✗ Error al conectar con ${API_URL}`);
-                logHttp("GET", "/usuarios", "ERR", err.message);
-            }
-        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
     </script>
 </body>
 </html>
